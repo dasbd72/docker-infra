@@ -1,0 +1,18 @@
+name: ${INFRA_COMPOSE_NAME:-infra}_mongo
+
+services:
+  mongo:
+    image: mongo:4.4.29
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - ${MONGO_PORT}:27017
+    volumes:
+      - ${MONGO_STORAGE_DIR}:/data/db
+    healthcheck: 
+      test: echo 'db.runCommand("ping").ok' | mongo --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD} --authenticationDatabase admin --quiet | grep -q 1
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 20s
